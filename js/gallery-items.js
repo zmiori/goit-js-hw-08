@@ -64,15 +64,44 @@ const images = [
   },
 ];
 
-// VARIABLES
-
+// REFS
 const galleryRef = document.querySelector('.js-gallery');
 const lightboxRef = document.querySelector('.js-lightbox');
+const closeLightBoxBtnRef = document.querySelector(
+  '[data-action="close-lightbox"]',
+);
+const largeImageRef = document.querySelector('.lightbox__image');
+const lightboxOverlayRef = document.querySelector('.lightbox__overlay');
 
-// console.log(lightboxRef);
+// console.log(lightboxOverlayRef);
+
+// CLICKS HANDLER
+galleryRef.addEventListener('click', handleImageClick);
+
+// CLOSE LIGHTBOX
+closeLightBoxBtnRef.addEventListener('click', closeLightBox);
+lightboxOverlayRef.addEventListener('click', closeLightBox);
+
+// KEYS LISTENER
+document.addEventListener('keydown', event => {
+  // console.log(event.key);
+  if (lightboxRef.classList.contains('is-open') && event.key === 'Escape') {
+    closeLightBox();
+  } else if (
+    lightboxRef.classList.contains('is-open') &&
+    event.key === 'ArrowRight'
+  ) {
+    switchForward();
+  } else if (
+    lightboxRef.classList.contains('is-open') &&
+    event.key === 'ArrowLeft'
+  ) {
+    switchBackward();
+  }
+  return;
+});
 
 // ADD HTML FOR GALLERY ITEM
-
 function insertGalleryItem(item) {
   const galleryItemRef = document.createElement('li');
   galleryItemRef.classList.add('gallery__item');
@@ -93,9 +122,64 @@ function insertGalleryItem(item) {
 }
 
 // ADD IN HTML IMAGES FROM THE ARRAY
-
 function addToGallery(array) {
   array.forEach(item => insertGalleryItem(item));
 }
-
 addToGallery(images);
+
+// HANDLE IMAGE CLICK
+function handleImageClick(event) {
+  event.preventDefault();
+
+  if (event.target.nodeName !== 'IMG') return;
+
+  openLightbox();
+  setLargeImage(event.target);
+
+  return;
+}
+
+function openLightbox() {
+  lightboxRef.classList.add('is-open');
+}
+
+function closeLightBox() {
+  lightboxRef.classList.remove('is-open');
+  largeImageRef.src = '';
+  largeImageRef.alt = '';
+  // console.log(largeImageRef);
+}
+
+function setLargeImage(image) {
+  largeImageRef.src = image.dataset.source;
+  largeImageRef.alt = image.alt;
+  // console.log(largeImageRef);
+}
+
+function switchForward() {
+  images.map(item => {
+    if (item.description === largeImageRef.alt) {
+      const i = images.indexOf(item);
+
+      if (i > 0) {
+        // console.log(images[i - 1].original);
+        largeImageRef.src = images[i - 1].original;
+        largeImageRef.alt = images[i - 1].description;
+      } else {
+        return;
+      }
+    }
+  });
+}
+
+function switchBackward() {
+  for (let i = images.length - 1; i >= 0; i -= 1) {
+    if (images[i].description === largeImageRef.alt) {
+      if (i !== images.length - 1) {
+        largeImageRef.src = images[i + 1].original;
+        largeImageRef.alt = images[i + 1].description;
+        break;
+      }
+    }
+  }
+}
