@@ -106,13 +106,13 @@ function insertGalleryItem(item) {
   const galleryItemRef = document.createElement('li');
   galleryItemRef.classList.add('gallery__item');
 
-  galleryItemRef.innerHTML = '<a>';
-  const galleryLinkRef = galleryItemRef.querySelector('a');
+  const galleryLinkRef = document.createElement('a');
+  galleryItemRef.appendChild(galleryLinkRef);
   galleryLinkRef.classList.add('gallery__link');
   galleryLinkRef.setAttribute('href', item.original);
 
-  galleryLinkRef.innerHTML = '<img>';
-  const galleryImageRef = galleryItemRef.querySelector('img');
+  const galleryImageRef = document.createElement('img');
+  galleryLinkRef.appendChild(galleryImageRef);
   galleryImageRef.classList.add('gallery__image');
   galleryImageRef.setAttribute('alt', item.description);
   galleryImageRef.setAttribute('src', item.preview);
